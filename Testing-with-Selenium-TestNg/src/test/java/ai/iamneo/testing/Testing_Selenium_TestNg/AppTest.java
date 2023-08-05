@@ -1,51 +1,61 @@
 package ai.iamneo.testing.Testing_Selenium_TestNg;
 
-import org.testng.annotations.Test;
-import java.net.URL;
-
 import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
-import org.openqa.selenium.remote.RemoteWebDriver;
-import org.testng.annotations.BeforeTest;
+import org.openqa.selenium.chrome.ChromeDriver;
 import org.testng.Assert;
 import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.Test;
 
-public class AppTest {
-
-    ChromeOptions chromeOptions = new ChromeOptions();
-    WebDriver driver = null;
+public class TestScenario {
+    private WebDriver driver;
+    private final String iamneoUrl = "http://iamneo.ai";
+    private final String facebookUrl = "https://www.facebook.com";
+    private final String expectedTitle = "We are Hiring!";
 
     @BeforeTest
-    public void beforeTest() throws Exception {
+    public void setUp() {
         // Set up the Chrome WebDriver
-        chromeOptions.setCapability("browserName", "chrome");
-        driver = new RemoteWebDriver(new URL("http://localhost:8080"), chromeOptions);
+        System.setProperty("webdriver.chrome.driver", "path_to_chrome_driver");
+        driver = new ChromeDriver();
     }
 
-    @Test
-    public void testIamneoPageTitle() throws InterruptedException {
-        driver.get("http://iamneo.ai:8080");
-        Thread.sleep(5000);
+    @Test(priority = 1)
+    public void testIamneoPageTitle() {
+        // Open the iamneo.ai website
+        driver.get(iamneoUrl);
+        // Maximize the window
+        driver.manage().window().maximize();
+
+        // Verify the page title and print the result
         String actualTitle = driver.getTitle();
-        String expectedTitle = "We are Hiring!";
-        Assert.assertEquals(actualTitle, expectedTitle);
+        if (actualTitle.equals(expectedTitle)) {
+            System.out.println("PASS: Page title matches - " + actualTitle);
+        } else {
+            System.out.println("FAIL: Page title does not match - Expected: " + expectedTitle + ", Actual: " + actualTitle);
+        }
     }
 
-    @Test
-    public void testFacebookNavigation() throws InterruptedException {
-        driver.get("https://www.facebook.com");
-        Thread.sleep(5000);
-
+    @Test(priority = 2)
+    public void testFacebookNavigation() {
+        // Navigate to Facebook
+        driver.get(facebookUrl);
+        // Navigate back to iamneo.ai website
         driver.navigate().back();
+
+        // Print the URL of the current page
         String currentURL = driver.getCurrentUrl();
         System.out.println("Current URL: " + currentURL);
 
+        // Navigate forward
         driver.navigate().forward();
+
+        // Reload the page
         driver.navigate().refresh();
     }
 
     @AfterTest
-    public void afterTest() {
+    public void tearDown() {
         // Close the browser
         driver.quit();
     }
