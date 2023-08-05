@@ -24,22 +24,19 @@ public class AppTest {
         driver.get("http://iamneo.ai");
         String pageTitle = driver.getTitle();
         String expectedTitle = "We are Hiring!";
-        Assert.assertEquals(pageTitle, expectedTitle, "Page title doesn't match!");
+        Assert.assertEquals(pageTitle, expectedTitle, "Fail");
     }
 
     @Test(priority = 2)
     public void testNavigation() {
         driver.get("https://www.facebook.com");
         driver.navigate().back();
+        String currentURL = driver.getCurrentUrl();
+        System.out.println("Current URL: " + currentURL);
         driver.navigate().forward();
         driver.navigate().refresh();
     }
 
-    @Test(priority = 3)
-    public void testPrintURL() {
-        String currentURL = driver.getCurrentUrl();
-        System.out.println("Current URL: " + currentURL);
-    }
 	@AfterTest
 	public void afterTest() {
 		driver.quit();
