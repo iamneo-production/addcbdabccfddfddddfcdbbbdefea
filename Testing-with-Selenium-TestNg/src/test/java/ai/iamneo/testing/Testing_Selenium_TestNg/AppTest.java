@@ -1,56 +1,51 @@
 package ai.iamneo.testing.Testing_Selenium_TestNg;
 
-import org.openqa.selenium.WebDriver;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.testng.Assert;
-import org.testng.annotations.AfterTest;
-import org.testng.annotations.BeforeTest;
+import io.github.bonigarcia.wdm.WebDriverManager;
 import org.testng.annotations.Test;
 
-public class TestScenario {
-    private WebDriver driver;
-    private final String iamneoUrl = "http://iamneo.ai";
-    private final String facebookUrl = "https://www.facebook.com";
-    private final String expectedTitle = "We are Hiring!";
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.chrome.ChromeOptions;
+import org.openqa.selenium.remote.RemoteWebDriver;
+import org.testng.Assert;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterTest;
+
+import java.net.URL;
+
+public class AppTest {
+
+    ChromeOptions chromeOptions = new ChromeOptions();
+    WebDriver driver = null;
 
     @BeforeTest
-    public void setUp() {
-        // Set up the Chrome WebDriver
-        System.setProperty("webdriver.chrome.driver", "path_to_chrome_driver");
-        driver = new ChromeDriver();
+    public void setUp() throws Exception {
+        // Set up WebDriverManager to use ChromeDriver on localhost:8080
+        WebDriverManager.chromedriver().driverVersion("94.0.4606.61").setup();
+        chromeOptions.setCapability("browserName", "chrome");
+        chromeOptions.setCapability("port", 8080);
+
+        driver = new RemoteWebDriver(new URL("http://localhost:8080/wd/hub"), chromeOptions);
     }
 
-    @Test(priority = 1)
-    public void testIamneoPageTitle() {
-        // Open the iamneo.ai website
-        driver.get(iamneoUrl);
-        // Maximize the window
-        driver.manage().window().maximize();
-
-        // Verify the page title and print the result
+    @Test
+    public void testIamneoPageTitle() throws InterruptedException {
+        driver.get("http://iamneo.ai");
+        Thread.sleep(5000);
         String actualTitle = driver.getTitle();
-        if (actualTitle.equals(expectedTitle)) {
-            System.out.println("PASS: Page title matches - " + actualTitle);
-        } else {
-            System.out.println("FAIL: Page title does not match - Expected: " + expectedTitle + ", Actual: " + actualTitle);
-        }
+        String expectedTitle = "We are Hiring!";
+        Assert.assertEquals(actualTitle, expectedTitle);
     }
 
-    @Test(priority = 2)
-    public void testFacebookNavigation() {
-        // Navigate to Facebook
-        driver.get(facebookUrl);
-        // Navigate back to iamneo.ai website
-        driver.navigate().back();
+    @Test
+    public void testFacebookNavigation() throws InterruptedException {
+        driver.get("https://www.facebook.com");
+        Thread.sleep(5000);
 
-        // Print the URL of the current page
+        driver.navigate().back();
         String currentURL = driver.getCurrentUrl();
         System.out.println("Current URL: " + currentURL);
 
-        // Navigate forward
         driver.navigate().forward();
-
-        // Reload the page
         driver.navigate().refresh();
     }
 
